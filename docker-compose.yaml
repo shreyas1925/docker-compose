@@ -57,57 +57,57 @@ services:
       DB_PORT: 5432
       NODE_ENV: migration
 
-  #backend-server
-  # app_db:
-  #   container_name: app_db
-  #   image: postgres
-  #   volumes:
-  #     - ./app_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #     POSTGRES_DB: app_db
-  #   ports:
-  #     - "5434:5432"
+  # backend-server
+  app_db:
+    container_name: app_db
+    image: postgres
+    volumes:
+      - ./app_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+    ports:
+      - "5434:5432"
 
-  # app_server:
-  #   build: ../backend-server/
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - ../backend-server:/app
-  #   depends_on:
-  #     app_db:
-  #       condition: service_healthy
-  #   environment:
-  #     DB_HOST: app_db
-  #     DB_USER: postgres
-  #     DB_PASSWORD: postgres
-  #     DB_NAME: app_db
-  #     DB_PORT: 5432
-  #     NODE_ENV: docker
-  #     SECRET: secret
-  #     AUTH_URL: http://auth_server:4000
-  #     AUTH_PORT: 4000
+  app_server:
+    build: ../backend-server/
+    ports:
+      - "5000:5000"
+    volumes:
+      - ../backend-server:/app
+    depends_on:
+      app_db:
+        condition: service_healthy
+    environment:
+      DB_HOST: app_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: app_db
+      DB_PORT: 5432
+      NODE_ENV: docker
+      SECRET: secret
+      AUTH_URL: http://auth_server:4000
+      AUTH_PORT: 4000
 
-  # app_migration:
-  #   build:
-  #     context: ../backend-server/
-  #     dockerfile: Dockerfile.migration
-  #   depends_on:
-  #     app_db:
-  #       condition: service_healthy
-  #   environment:
-  #     DB_HOST: app_db
-  #     DB_USER: postgres
-  #     DB_PASSWORD: postgres
-  #     DB_NAME: app_db
-  #     DB_PORT: 5432
-  #     NODE_ENV: migration
-  #     AUTH_URL: http://auth_server:4000
-  #     AUTH_PORT: 4000
+  app_migration:
+    build:
+      context: ../backend-server/
+      dockerfile: Dockerfile.migration
+    depends_on:
+      app_db:
+        condition: service_healthy
+    environment:
+      DB_HOST: app_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: app_db
+      DB_PORT: 5432
+      NODE_ENV: migration
+      AUTH_URL: http://auth_server:4000
+      AUTH_PORT: 4000
